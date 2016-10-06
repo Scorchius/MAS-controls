@@ -1,0 +1,180 @@
+close all
+clear
+clc
+
+
+%% FOR LOGITECH C525 WEBCAM
+
+tic
+%[]Start simulation time.
+
+% cam = webcam;
+% %[]Store a structure containing webcam image acquisition hardware info
+% 
+% cam.Resolution = char(cam.AvailableResolution(18));
+% %[]Set camera to optimal resolution.
+% 
+% img = snapshot(cam);
+%[]Capture snapshot from webcam
+
+
+% preview(cam)
+
+
+img = imread('RangeTest1','tif');
+ 
+% figure
+% imshow(img)
+% d = imdistline;
+
+% 0 = black
+% 1 = white
+
+BW = im2bw(img,0.3);
+
+toc
+
+[rows columns] = size(BW);
+
+rowcom = zeros(rows,3);
+
+count = 0;
+
+kk = 1;
+
+for ii = 1:rows;
+    %row by row
+    
+    for jj = 1:columns;
+        %column by column
+    
+        if BW(ii,jj) == 0
+            %if pixel is black
+            
+            count = count + 1;
+            %count of black pixels occuring in a row
+        
+        elseif BW(ii,jj) == 1 && count > 1
+            %DOES NOT INCLUDE LAST BLACK PIXELS IN ROW, included in next if
+            %statement.
+            
+            rowcom(ii,kk) = count;
+            %store length of occuring black pixels
+            
+            kk = kk + 1;
+            %next iteration of black pixels occuring in the row
+            
+            count = 0;
+            %reset counter
+   
+        end
+        
+        if jj == columns;
+            %check if at last column (end of the row)
+            
+            rowcom(ii,kk) = count;
+            %store last row of occuring black pixels
+            
+            kk = 1;
+            %reset iteration of black pixels in prepation for next row
+            
+            count = 0;
+            %reset counter
+
+        end 
+        
+    end
+    
+end
+
+
+
+
+% figure
+% imshow(img)
+% figure
+% imshow(BW)
+
+
+
+
+
+
+%% This part is the old way of finding the circle and width of the circle.
+% greyimg = rgb2gray(img);
+% %[]Turn image into greyscale.
+% 
+% [centers, radii] = imfindcircles(greyimg,[90 130],'ObjectPolarity',...
+%     'dark','Sensitivity',.9);
+% %Find target and its radius.
+% 
+% % figure
+% % imshow(greyimg)
+% % viscircles(centers,radii);
+% % d = imdistline;
+% %[]Display circles found with imfindcircles.
+% 
+% % W = 50.8;
+% % %[mm]Size of target
+% % 
+% % D = 279.4;
+% % %[mm]Target distance from camera lens.
+% 
+% fl = 1177;
+% % fl = (179.4 * 2 * radii) / 50.8;
+% %[pixels]Focal length of camera. (D * 2 * radii) / W
+% 
+% distance = (fl * 50.8) / (2 * radii);
+% %Calculate distance in mm.
+% 
+% 
+% fprintf('Distance of Target, Test 1: %.2f mm\n',distance)
+% 
+% 2*radii
+%[]Output distance into Command Window.
+
+% clear img greyimg centers radii D distance
+% 
+% img = imread('RangeTest1b','tif');
+% 
+% % img = snapshot(cam);
+% % %[]Take snapshot with the webcam.
+% 
+% greyimg = rgb2gray(img);
+% %[]Take image and turn to gray scale.
+% 
+% [centers, radii] = imfindcircles(greyimg,[40 60],'ObjectPolarity','dark','Sensitivity',.9);
+% %Find target and its radius.
+% 
+% figure
+% imshow(greyimg)
+% viscircles(centers,radii);
+% %[]Display circles found with imfindcircles.
+% 
+% distance = (fl * 50.8) / (2 * radii);
+% %[mm]Calculate distance from camera to target.
+% 
+% fprintf('Distance of Target, Test 2: %.2f mm\n',distance)
+% %[]Output distances calculated to command window.
+% 
+% % clear img greyimg centers radii D distance
+
+
+toc
+%[]Display time of simulation.
+
+%% NOT FOR WEBCAMS
+% % a = imaqhwinfo;
+% % %[]Returns a structure, a, which contains image acquisition hardware info
+% % 
+% % camera_name = char(a.InstalledAdaptors(end));
+% % %[]Get name of the camera
+% % 
+% % camera_info = imaqhwinfo(camera_name);
+% % %[]Get camera info
+% % 
+% % camera_id = camera_info.DeviceInfo.DeviceID(end);
+% % %[]Extract camera ID from camera info
+% % 
+% % format = char(camera_info.DeviceInfo.SupportedFormats(end));
+% % %[]Get camera resolution
